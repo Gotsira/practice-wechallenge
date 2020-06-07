@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  db:
+    image: mongo
+    container_name: test-db
+    environment:
+      - MONGO_INITDB_DATABASE=test-db
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db:/data/db
+    restart: always
+
+  server:
+    build: ./backend
+    container_name: test-server
+    environment:
+      - MONGODB_HOST=http://db:27017
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    volumes:
+      - ./backend/src:/usr/src/app/src
+      - ./backend/package.json:/usr/src/app/package.json
+    restart: always
+    # frontend:
+    #   build: ./frontend
+    #   container_name: test-frontend
+    #   ports:
+    #     - 5555:3000
+    #   stdin_open: true
+    #   depends_on:
+    #     - server
+    #   volumes:
+    #     - ./frontend/public:/usr/src/app/public
+    #     - ./frontend/src:/usr/src/app/src
+    #     - ./frontend/package.json:/usr/src/app/package.json
+    #   restart: always
